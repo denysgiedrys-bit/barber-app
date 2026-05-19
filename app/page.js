@@ -49,6 +49,7 @@ export default function Home() {
       if (error.code === '23505') {
         setChyba('Tento čas je již obsazený. Vyberte prosím jiný.')
         await nactiObsazene()
+        setCas('')
       } else {
         setChyba('Něco se pokazilo. Zkuste to znovu.')
       }
@@ -62,6 +63,7 @@ export default function Home() {
         body: JSON.stringify({ jmeno, email, sluzba: sluzba.nazev, datum, cas })
       })
     }
+    await nactiObsazene()
     setNacitani(false)
     setOdeslano(true)
   }
@@ -107,7 +109,6 @@ export default function Home() {
         <h1 className="text-2xl font-bold mb-1 text-white">Rezervace</h1>
         <p className="text-zinc-400 text-sm mb-6">Vyberte službu, čas a potvrďte</p>
 
-        {/* Služba */}
         <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
           <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">1. Služba</p>
           <div className="grid grid-cols-3 gap-2">
@@ -121,7 +122,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Datum */}
         {sluzba && (
           <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">2. Den</p>
@@ -142,7 +142,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Čas */}
         {datum && (
           <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">3. Čas</p>
@@ -160,7 +159,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Kontakt */}
         {cas && (
           <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">4. Vaše údaje</p>
