@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 const SLUZBY = [
@@ -24,7 +24,19 @@ export default function Home() {
   const [nacitani, setNacitani] = useState(false)
   const [chyba, setChyba] = useState('')
 
-  useEffect(() => { if (datum) nactiObsazene() }, [datum])
+  const nactiObsazene = useCallback(async (d) => {
+    const { data } = await supabase.from('rezervace').select('cas').eq('datum', d)
+    if (data) setObsazene(data.map(r => r.cas.slice(0,5)))
+  }, [])
+
+  useEffect(() => {
+    if (datum) {
+      nactiObsazene(datum)
+      const interval = setInterval(() => nactiObsazene(datum), 5000)
+      return () => clearInterval(interval)
+    }
+  }, [datum, nactiObsazene])
+
   useEffect(() => { nactiBlokovane() }, [])
 
   async function nactiBlokovane() {
@@ -32,11 +44,6 @@ export default function Home() {
     const { data: hod } = await supabase.from('blokovane_hodiny').select('datum, cas')
     if (blok) setBlokovane(blok.map(d => d.datum))
     if (hod) setBlokovaneHodiny(hod)
-  }
-
-  async function nactiObsazene() {
-    const { data } = await supabase.from('rezervace').select('cas').eq('datum', datum)
-    if (data) setObsazene(data.map(r => r.cas.slice(0,5)))
   }
 
   async function odeslat() {
@@ -48,7 +55,7 @@ export default function Home() {
     if (error) {
       if (error.code === '23505') {
         setChyba('Tento čas je již obsazený. Vyberte prosím jiný.')
-        await nactiObsazene()
+        await nactiObsazene(datum)
         setCas('')
       } else {
         setChyba('Něco se pokazilo. Zkuste to znovu.')
@@ -63,7 +70,7 @@ export default function Home() {
         body: JSON.stringify({ jmeno, email, sluzba: sluzba.nazev, datum, cas })
       })
     }
-    await nactiObsazene()
+    await nactiObsazene(datum)
     setNacitani(false)
     setOdeslano(true)
   }
@@ -150,7 +157,7 @@ export default function Home() {
                 const nedostupny = jeCasNedostupny(c)
                 return (
                   <button key={c} disabled={nedostupny} onClick={() => setCas(c)}
-                    className={`p-2.5 rounded-xl border text-sm transition-all ${nedostupny ? 'opacity-20 line-through cursor-not-allowed border-zinc-800' : cas === c ? 'border-white bg-white text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-500'}`}>
+                    className={`p-2.5 rounded-xl border text-sm transition-all ${nedostupny ? 'opacity-30 line-through cursor-not-allowed border-zinc-800 text-zinc-600' : cas === c ? 'border-white bg-white text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-500'}`}>
                     {c}
                   </button>
                 )
