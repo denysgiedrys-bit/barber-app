@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import Logo from './components/Logo'
 
 const SLUZBY = [
   { id: 'stih', nazev: 'Střih', trvani: 30 },
@@ -165,9 +166,12 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-950 py-8 px-4">
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-1 text-white">✂️ MCuts</h1>
-            <p className="text-zinc-400 text-sm">Vyberte službu, čas a potvrďte</p>
+          <div className="flex items-center gap-3">
+            <Logo size={44} />
+            <div>
+              <h1 className="text-2xl font-bold text-white leading-tight">MCuts</h1>
+              <p className="text-zinc-400 text-sm">Vyberte službu, čas a potvrďte</p>
+            </div>
           </div>
           <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl">
             Moje rezervace
