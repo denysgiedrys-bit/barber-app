@@ -233,8 +233,8 @@ export default function Home() {
               <p className="text-zinc-400 text-sm">Vyberte službu, čas a potvrďte</p>
             </div>
           </div>
-          <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl">
-            Moje rezervace
+          <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl whitespace-nowrap shrink-0">
+            Moje rez.
           </a>
         </div>
 
