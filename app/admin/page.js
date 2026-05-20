@@ -121,13 +121,84 @@ export default function Admin() {
         </div>
 
         <div className="flex gap-2 mb-5 flex-wrap">
-          {[['rezervace','Rezervace'],['rozvrh','Rozvrh'],['dny','Blokovat dny']].map(([id, label]) => (
+          {[['rezervace','Rezervace'],['statistiky','Statistiky'],['rozvrh','Rozvrh'],['dny','Blokovat dny']].map(([id, label]) => (
             <button key={id} onClick={() => setAktivniTab(id)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${aktivniTab === id ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}>
               {label}
             </button>
           ))}
         </div>
+
+        {/* Statistiky */}
+        {aktivniTab === 'statistiky' && (() => {
+          const mesic = new Date().getMonth()
+          const rok = new Date().getFullYear()
+          const tentoMesic = rezervace.filter(r => {
+            const d = new Date(r.datum)
+            return d.getMonth() === mesic && d.getFullYear() === rok
+          })
+          const minulyMesic = rezervace.filter(r => {
+            const d = new Date(r.datum)
+            const m = mesic === 0 ? 11 : mesic - 1
+            const y = mesic === 0 ? rok - 1 : rok
+            return d.getMonth() === m && d.getFullYear() === y
+          })
+          const sluzbyCount = {}
+          rezervace.forEach(r => { sluzbyCount[r.sluzba] = (sluzbyCount[r.sluzba] || 0) + 1 })
+          const nejSluzba = Object.entries(sluzbyCount).sort((a,b) => b[1]-a[1])[0]
+          const dnyCount = {1:0,2:0,3:0,4:0,5:0,6:0,0:0}
+          rezervace.forEach(r => { const d = new Date(r.datum).getDay(); dnyCount[d] = (dnyCount[d]||0)+1 })
+          const dnyNazvy = ['Ne','Po','Út','St','Čt','Pá','So']
+          const nejDen = Object.entries(dnyCount).sort((a,b) => b[1]-a[1])[0]
+          const maxDen = Math.max(...Object.values(dnyCount))
+          return (
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+                  <div className="text-xs text-zinc-500 mb-1">Tento měsíc</div>
+                  <div className="text-3xl font-bold text-white">{tentoMesic.length}</div>
+                  <div className={`text-xs mt-1 ${tentoMesic.length >= minulyMesic.length ? 'text-green-400' : 'text-red-400'}`}>
+                    {minulyMesic.length > 0 ? `${tentoMesic.length >= minulyMesic.length ? '+' : ''}${tentoMesic.length - minulyMesic.length} oproti min. měsíci` : 'první měsíc'}
+                  </div>
+                </div>
+                <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+                  <div className="text-xs text-zinc-500 mb-1">Celkem rezervací</div>
+                  <div className="text-3xl font-bold text-white">{rezervace.length}</div>
+                  <div className="text-xs text-zinc-500 mt-1">od začátku</div>
+                </div>
+              </div>
+
+              {nejSluzba && (
+                <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+                  <div className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">Oblíbenost služeb</div>
+                  {Object.entries(sluzbyCount).sort((a,b) => b[1]-a[1]).map(([sluzba, count]) => (
+                    <div key={sluzba} className="mb-2">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-white">{sluzba}</span>
+                        <span className="text-zinc-400">{count}×</span>
+                      </div>
+                      <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-white rounded-full transition-all" style={{width: `${(count / rezervace.length) * 100}%`}} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+                <div className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">Nejrušnější dny</div>
+                <div className="flex gap-1 items-end h-16">
+                  {[1,2,3,4,5,6,0].map(d => (
+                    <div key={d} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="w-full bg-zinc-700 rounded-sm transition-all" style={{height: maxDen > 0 ? `${((dnyCount[d]||0) / maxDen) * 48}px` : '2px', minHeight: '2px', background: dnyCount[d] === maxDen && maxDen > 0 ? 'white' : ''}} />
+                      <span className="text-xs text-zinc-500">{dnyNazvy[d]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Rezervace */}
         {aktivniTab === 'rezervace' && (
