@@ -75,6 +75,19 @@ export default function Admin() {
   const dnes = new Date().toISOString().split('T')[0]
   const dnesniRez = rezervace.filter(r => r.datum === dnes)
   const budouciRez = rezervace.filter(r => r.datum > dnes)
+  const minuleRez = rezervace.filter(r => r.datum < dnes)
+
+  const groupByDate = (rez) => {
+    const groups = {}
+    rez.forEach(r => { if (!groups[r.datum]) groups[r.datum] = []; groups[r.datum].push(r) })
+    return groups
+  }
+
+  const formatDatum = (d) => {
+    const date = new Date(d + 'T00:00:00')
+    const dny = ['Ne','Po','Út','St','Čt','Pá','So']
+    return `${dny[date.getDay()]} ${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`
+  }
 
   if (nacitani) return <div className="min-h-screen flex items-center justify-center bg-zinc-950"><p className="text-zinc-400">Načítám...</p></div>
 
@@ -104,23 +117,86 @@ export default function Admin() {
 
         {/* Rezervace */}
         {aktivniTab === 'rezervace' && (
-          <div className="flex flex-col gap-2">
-            {rezervace.length === 0 && <div className="bg-zinc-900 rounded-2xl p-6 text-center text-zinc-500 border border-zinc-800">Žádné rezervace</div>}
-            {rezervace.map(r => (
-              <div key={r.id} className="bg-zinc-900 rounded-2xl p-4 flex items-center gap-4 border border-zinc-800">
-                <div className="text-center min-w-14">
-                  <div className="text-xs text-zinc-500">{r.datum}</div>
-                  <div className="font-bold text-white text-lg">{r.cas?.slice(0,5)}</div>
+          <div className="flex flex-col gap-4">
+            {rezervace.filter(r => r.datum >= dnes).length === 0 && (
+              <div className="bg-zinc-900 rounded-2xl p-6 text-center text-zinc-500 border border-zinc-800">Žádné nadcházející rezervace</div>
+            )}
+
+            {/* Dnes */}
+            {dnesniRez.length > 0 && (
+              <div>
+                <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2 px-1">Dnes</p>
+                <div className="flex flex-col gap-2">
+                  {dnesniRez.map(r => (
+                    <div key={r.id} className="bg-zinc-900 rounded-2xl p-4 flex items-center gap-4 border border-zinc-700">
+                      <div className="text-center min-w-12">
+                        <div className="font-bold text-white text-xl">{r.cas?.slice(0,5)}</div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-white">{r.jmeno}</div>
+                        <div className="text-sm text-zinc-400">{r.sluzba} · {r.telefon}</div>
+                        {r.email && <div className="text-xs text-zinc-500 truncate">{r.email}</div>}
+                      </div>
+                      <button onClick={() => zrusitRezervaci(r.id)} className="text-xs text-red-400 border border-red-900 px-3 py-1.5 rounded-xl hover:bg-red-950 transition-all shrink-0">
+                        Zrušit
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex-1">
-                  <div className="font-medium text-white">{r.jmeno}</div>
-                  <div className="text-sm text-zinc-400">{r.sluzba} · {r.telefon}</div>
-                </div>
-                <button onClick={() => zrusitRezervaci(r.id)} className="text-xs text-red-400 border border-red-900 px-3 py-1.5 rounded-xl hover:bg-red-950 transition-all">
-                  Zrušit
-                </button>
               </div>
-            ))}
+            )}
+
+            {/* Nadcházející po dnech */}
+            {budouciRez.length > 0 && (
+              <div>
+                <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2 px-1">Nadcházející</p>
+                {Object.entries(groupByDate(budouciRez)).map(([datum, rez]) => (
+                  <div key={datum} className="mb-3">
+                    <p className="text-sm text-zinc-400 font-medium mb-2 px-1">{formatDatum(datum)}</p>
+                    <div className="flex flex-col gap-2">
+                      {rez.map(r => (
+                        <div key={r.id} className="bg-zinc-900 rounded-2xl p-4 flex items-center gap-4 border border-zinc-800">
+                          <div className="text-center min-w-12">
+                            <div className="font-bold text-white text-lg">{r.cas?.slice(0,5)}</div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-white">{r.jmeno}</div>
+                            <div className="text-sm text-zinc-400">{r.sluzba} · {r.telefon}</div>
+                            {r.email && <div className="text-xs text-zinc-500 truncate">{r.email}</div>}
+                          </div>
+                          <button onClick={() => zrusitRezervaci(r.id)} className="text-xs text-red-400 border border-red-900 px-3 py-1.5 rounded-xl hover:bg-red-950 transition-all shrink-0">
+                            Zrušit
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Minulé (sbalené) */}
+            {minuleRez.length > 0 && (
+              <details className="group">
+                <summary className="text-xs text-zinc-600 uppercase tracking-wider px-1 cursor-pointer hover:text-zinc-400 transition-colors list-none">
+                  Minulé rezervace ({minuleRez.length})
+                </summary>
+                <div className="flex flex-col gap-2 mt-2">
+                  {minuleRez.slice().reverse().map(r => (
+                    <div key={r.id} className="bg-zinc-900 rounded-2xl p-4 flex items-center gap-4 border border-zinc-800 opacity-50">
+                      <div className="text-center min-w-12">
+                        <div className="text-xs text-zinc-500">{r.datum}</div>
+                        <div className="font-bold text-zinc-400 text-lg">{r.cas?.slice(0,5)}</div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-zinc-300">{r.jmeno}</div>
+                        <div className="text-sm text-zinc-500">{r.sluzba} · {r.telefon}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
           </div>
         )}
 
