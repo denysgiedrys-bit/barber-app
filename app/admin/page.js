@@ -150,8 +150,8 @@ export default function Admin() {
 
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[['Dnes', dnesniRez.length], ['Nadcházející', budouciRez.length], ['Celkem', rezervace.length]].map(([label, val]) => (
-            <div key={label} className="bg-zinc-900 rounded-2xl p-4 text-center border border-zinc-800">
-              <div className="text-3xl font-bold text-white">{val}</div>
+            <div key={label} className={`rounded-2xl p-4 text-center border ${label === 'Dnes' ? 'bg-amber-400/10 border-amber-400/30' : 'bg-zinc-900 border-zinc-800'}`}>
+              <div className={`text-3xl font-bold ${label === 'Dnes' ? 'text-amber-400' : 'text-white'}`}>{val}</div>
               <div className="text-xs text-zinc-400 mt-1">{label}</div>
             </div>
           ))}
@@ -247,12 +247,12 @@ export default function Admin() {
             {/* Dnes */}
             {dnesniRez.length > 0 && (
               <div>
-                <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2 px-1">Dnes</p>
+                <p className="text-xs text-amber-400 uppercase tracking-wider mb-2 px-1 font-medium">Dnes</p>
                 <div className="flex flex-col gap-2">
                   {dnesniRez.map(r => (
-                    <div key={r.id} className="bg-zinc-900 rounded-2xl p-4 flex items-center gap-4 border border-zinc-700">
+                    <div key={r.id} className="bg-amber-400/5 rounded-2xl p-4 flex items-center gap-4 border border-amber-400/20">
                       <div className="text-center min-w-12">
-                        <div className="font-bold text-white text-xl">{r.cas?.slice(0,5)}</div>
+                        <div className="font-bold text-amber-400 text-xl">{r.cas?.slice(0,5)}</div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-white">{r.jmeno}</div>
