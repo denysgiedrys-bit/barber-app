@@ -158,6 +158,9 @@ export default function Home() {
     )
   }
 
+  const krok = cas ? 4 : datum ? 3 : sluzba ? 2 : 1
+  const kroky = ['Služba', 'Den', 'Čas', 'Údaje']
+
   return (
     <div className="min-h-screen bg-zinc-950 py-8 px-4">
       <div className="max-w-md mx-auto">
@@ -169,6 +172,27 @@ export default function Home() {
           <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl">
             Moje rezervace
           </a>
+        </div>
+
+        <div className="flex items-center mb-6">
+          {kroky.map((label, i) => {
+            const cislo = i + 1
+            const hotovy = krok > cislo
+            const aktivni = krok === cislo
+            return (
+              <div key={i} className="flex items-center flex-1 last:flex-none">
+                <div className="flex flex-col items-center">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${hotovy ? 'bg-white text-black' : aktivni ? 'bg-white text-black ring-4 ring-white/20' : 'bg-zinc-800 text-zinc-500 border border-zinc-700'}`}>
+                    {hotovy ? '✓' : cislo}
+                  </div>
+                  <span className={`text-xs mt-1 transition-all ${aktivni ? 'text-white font-medium' : hotovy ? 'text-zinc-400' : 'text-zinc-600'}`}>{label}</span>
+                </div>
+                {i < kroky.length - 1 && (
+                  <div className={`flex-1 h-px mx-2 mb-4 transition-all ${krok > cislo ? 'bg-white' : 'bg-zinc-800'}`} />
+                )}
+              </div>
+            )
+          })}
         </div>
 
         <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
