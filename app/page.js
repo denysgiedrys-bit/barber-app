@@ -132,26 +132,50 @@ export default function Home() {
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
-        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl text-center max-w-sm w-full">
-          <div className="text-5xl mb-4">✅</div>
-          <h2 className="text-xl font-bold mb-2 text-white">Rezervace potvrzena!</h2>
-          {email && <p className="text-zinc-400 text-sm">Potvrzení jsme zaslali na váš email.</p>}
-          <div className="mt-4 bg-zinc-800 rounded-2xl p-4">
-            <p className="text-white font-medium">{sluzba?.nazev}</p>
-            <p className="text-zinc-400 text-sm mt-1">{datum} · {cas}</p>
+        <div className="max-w-sm w-full text-center">
+
+          {/* Animovaná fajfka */}
+          <div className="flex justify-center mb-6">
+            <div className="animate-scale-in w-20 h-20 rounded-full bg-amber-400 flex items-center justify-center">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <polyline className="animate-check" points="6,18 14,26 30,10" stroke="#1c1917" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
           </div>
-          <div className="mt-4 flex gap-2">
+
+          <h2 className="animate-fade-up animate-fade-up-1 text-2xl font-bold text-white mb-1">Hotovo!</h2>
+          <p className="animate-fade-up animate-fade-up-1 text-zinc-400 text-sm mb-6">
+            {email ? 'Potvrzení jsme zaslali na váš email.' : 'Vaše rezervace byla přijata.'}
+          </p>
+
+          {/* Detail rezervace */}
+          <div className="animate-fade-up animate-fade-up-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-3 text-left">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-zinc-500 uppercase tracking-wider">Rezervace</span>
+              <span className="text-xs text-amber-400 font-medium">{sluzba?.trvani} min</span>
+            </div>
+            <p className="text-white font-semibold text-lg">{sluzba?.nazev}</p>
+            <p className="text-zinc-400 text-sm mt-1">
+              {new Date(datum + 'T00:00:00').toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+            <p className="text-amber-400 font-bold text-2xl mt-2">{cas}</p>
+          </div>
+
+          {/* Přidat do kalendáře */}
+          <div className="animate-fade-up animate-fade-up-3 flex gap-2 mb-3">
             <a href={googleUrl} target="_blank" rel="noopener noreferrer"
-              className="flex-1 bg-zinc-800 border border-zinc-700 text-white py-2.5 rounded-2xl text-xs font-medium hover:border-zinc-500 transition-all">
+              className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-300 py-2.5 rounded-2xl text-xs font-medium hover:border-zinc-600 transition-all">
               Google Kalendář
             </a>
             <a href={icsUrl} download="rezervace.ics"
-              className="flex-1 bg-zinc-800 border border-zinc-700 text-white py-2.5 rounded-2xl text-xs font-medium hover:border-zinc-500 transition-all">
+              className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-300 py-2.5 rounded-2xl text-xs font-medium hover:border-zinc-600 transition-all">
               Apple / Outlook
             </a>
           </div>
-          <button onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail(''); setPoznamka('') }}
-            className="mt-3 w-full bg-white text-black py-3 rounded-2xl font-medium text-sm">
+
+          <button
+            onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail(''); setPoznamka('') }}
+            className="animate-fade-up animate-fade-up-4 w-full bg-zinc-900 border border-zinc-800 text-zinc-400 py-3 rounded-2xl text-sm hover:border-zinc-600 hover:text-zinc-200 transition-all">
             Nová rezervace
           </button>
         </div>
