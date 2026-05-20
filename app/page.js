@@ -47,9 +47,9 @@ export default function Home() {
   async function odeslat() {
     setNacitani(true)
     setChyba('')
-    const { error } = await supabase.from('rezervace').insert({
+    const { data: rezData, error } = await supabase.from('rezervace').insert({
       jmeno, telefon, sluzba: sluzba.nazev, datum, cas, email: email || null
-    })
+    }).select('cancel_token').single()
     if (error) {
       if (error.code === '23505') {
         setChyba('Tento čas je již obsazený. Vyberte prosím jiný.')
@@ -65,7 +65,7 @@ export default function Home() {
       await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jmeno, email, sluzba: sluzba.nazev, datum, cas })
+        body: JSON.stringify({ jmeno, email, sluzba: sluzba.nazev, datum, cas, cancelToken: rezData?.cancel_token })
       })
     }
     await nactiData()

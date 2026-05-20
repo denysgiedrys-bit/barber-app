@@ -3,7 +3,9 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request) {
-  const { jmeno, email, sluzba, datum, cas } = await request.json()
+  const { jmeno, email, sluzba, datum, cas, cancelToken } = await request.json()
+  const appUrl = process.env.APP_URL || 'http://localhost:3000'
+  const cancelUrl = cancelToken ? `${appUrl}/zrusit?token=${cancelToken}` : null
 
   try {
     await resend.emails.send({
@@ -20,6 +22,11 @@ export async function POST(request) {
             <tr><td style="padding: 8px; color: #666;">Datum</td><td style="padding: 8px;"><strong>${datum}</strong></td></tr>
             <tr><td style="padding: 8px; color: #666;">Čas</td><td style="padding: 8px;"><strong>${cas}</strong></td></tr>
           </table>
+          ${cancelUrl ? `
+          <p style="margin-top: 24px;">
+            <a href="${cancelUrl}" style="color: #ef4444; font-size: 14px;">Zrušit rezervaci</a>
+          </p>
+          ` : ''}
           <p style="color: #666; font-size: 14px;">Připomínku dostanete den před termínem.</p>
         </div>
       `
