@@ -272,10 +272,35 @@ export default function Home() {
         {jmeno && telefon && jeValidniTelefon(telefon) && (
           <button onClick={odeslat} disabled={nacitani}
             className="w-full bg-white text-black py-4 rounded-2xl font-medium text-sm hover:bg-zinc-100 transition-all">
-            {nacitani ? 'Odesílám...' : `Potvrdit — ${sluzba?.nazev} ${datum} ${cas}`}
+            {nacitani ? 'Odesílám...' : 'Potvrdit rezervaci'}
           </button>
         )}
+
+        <div className="pb-28" />
       </div>
+
+      {sluzba && (
+        <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-3 bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-transparent pointer-events-none">
+          <div className="max-w-md mx-auto bg-zinc-900 border border-zinc-700 rounded-2xl px-4 py-3 flex items-center gap-3 pointer-events-auto">
+            <div className="flex-1 flex items-center gap-2 flex-wrap">
+              <span className="text-white text-sm font-medium">{sluzba.nazev}</span>
+              {datum && (
+                <>
+                  <span className="text-zinc-600 text-xs">·</span>
+                  <span className="text-zinc-300 text-sm">{new Date(datum + 'T00:00:00').toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short' })}</span>
+                </>
+              )}
+              {cas && (
+                <>
+                  <span className="text-zinc-600 text-xs">·</span>
+                  <span className="text-zinc-300 text-sm">{cas}</span>
+                </>
+              )}
+            </div>
+            <span className="text-zinc-500 text-xs shrink-0">{sluzba.trvani} min</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
