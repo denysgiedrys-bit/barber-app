@@ -195,7 +195,7 @@ export default function Home() {
           })}
         </div>
 
-        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
+        <div className="animate-step bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
           <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">1. Služba</p>
           <div className="grid grid-cols-3 gap-2">
             {SLUZBY.map(s => (
@@ -209,7 +209,7 @@ export default function Home() {
         </div>
 
         {sluzba && (
-          <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
+          <div key={sluzba.id} className="animate-step bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">2. Den</p>
             <div className="grid grid-cols-4 gap-2">
               {getDny().map(d => {
@@ -229,7 +229,7 @@ export default function Home() {
         )}
 
         {datum && (
-          <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
+          <div key={datum} className="animate-step bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">3. Čas</p>
 <div className="grid grid-cols-4 gap-2">
               {getCasyProDen(datum).map(c => {
@@ -246,7 +246,7 @@ export default function Home() {
         )}
 
         {cas && (
-          <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
+          <div key={cas} className="animate-step bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">4. Vaše údaje</p>
             <input value={jmeno} onChange={e => setJmeno(e.target.value)}
               placeholder="Jméno a příjmení"
