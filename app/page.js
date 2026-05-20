@@ -161,8 +161,15 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-950 py-8 px-4">
       <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold mb-1 text-white">Rezervace</h1>
-        <p className="text-zinc-400 text-sm mb-6">Vyberte službu, čas a potvrďte</p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold mb-1 text-white">Rezervace</h1>
+            <p className="text-zinc-400 text-sm">Vyberte službu, čas a potvrďte</p>
+          </div>
+          <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl">
+            Moje rezervace
+          </a>
+        </div>
 
         <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
           <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">1. Služba</p>
