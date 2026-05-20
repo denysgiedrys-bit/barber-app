@@ -32,6 +32,7 @@ export default function Home() {
   const [nacitani, setNacitani] = useState(false)
   const [prvniNacitani, setPrvniNacitani] = useState(true)
   const [chyba, setChyba] = useState('')
+  const [emailChyba, setEmailChyba] = useState(false)
 
   useEffect(() => {
     nactiData()
@@ -71,11 +72,13 @@ export default function Home() {
       return
     }
     if (email) {
-      await fetch('/api/send-email', {
+      const emailRes = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jmeno, email, sluzba: sluzba.nazev, datum, cas, cancelToken: rezData?.cancel_token })
       })
+      const emailData = await emailRes.json()
+      if (!emailData.ok) setEmailChyba(true)
     }
     await nactiData()
     setNacitani(false)
@@ -180,9 +183,14 @@ export default function Home() {
           </div>
 
           <h2 className="animate-fade-up animate-fade-up-1 text-2xl font-bold text-white mb-1">Hotovo!</h2>
-          <p className="animate-fade-up animate-fade-up-1 text-zinc-400 text-sm mb-6">
-            {email ? 'Potvrzení jsme zaslali na váš email.' : 'Vaše rezervace byla přijata.'}
+          <p className="animate-fade-up animate-fade-up-1 text-zinc-400 text-sm mb-2">
+            {email && !emailChyba ? 'Potvrzení jsme zaslali na váš email.' : 'Vaše rezervace byla přijata.'}
           </p>
+          {emailChyba && email && (
+            <p className="animate-fade-up animate-fade-up-1 text-amber-400 text-xs mb-4 bg-amber-400/10 border border-amber-400/20 rounded-xl px-3 py-2">
+              Email se nepodařilo odeslat — rezervace je ale uložena.
+            </p>
+          )}
 
           {/* Detail rezervace */}
           <div className="animate-fade-up animate-fade-up-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 mb-3 text-left">
@@ -210,7 +218,7 @@ export default function Home() {
           </div>
 
           <button
-            onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail(''); setPoznamka('') }}
+            onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail(''); setPoznamka(''); setEmailChyba(false) }}
             className="animate-fade-up animate-fade-up-4 w-full bg-zinc-900 border border-zinc-800 text-zinc-400 py-3 rounded-2xl text-sm hover:border-zinc-600 hover:text-zinc-200 transition-all">
             Nová rezervace
           </button>

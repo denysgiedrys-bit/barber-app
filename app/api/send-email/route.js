@@ -8,7 +8,7 @@ export async function POST(request) {
   const cancelUrl = cancelToken ? `${appUrl}/zrusit?token=${cancelToken}` : null
 
   try {
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: email,
       subject: `matescutz — potvrzení rezervace`,
@@ -32,8 +32,13 @@ export async function POST(request) {
         </div>
       `
     })
-    return Response.json({ ok: true })
+    if (error) {
+      console.error('Resend error:', error)
+      return Response.json({ ok: false, error: error.message }, { status: 500 })
+    }
+    return Response.json({ ok: true, id: data?.id })
   } catch (error) {
-    return Response.json({ ok: false, error }, { status: 500 })
+    console.error('send-email exception:', error)
+    return Response.json({ ok: false, error: error?.message || String(error) }, { status: 500 })
   }
 }
