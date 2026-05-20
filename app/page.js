@@ -20,6 +20,7 @@ export default function Home() {
   const [jmeno, setJmeno] = useState('')
   const [telefon, setTelefon] = useState('')
   const [email, setEmail] = useState('')
+  const [poznamka, setPoznamka] = useState('')
   const [rezervace, setRezervace] = useState([])
   const [blokovane, setBlokovane] = useState([])
   const [blokovaneHodiny, setBlokovaneHodiny] = useState([])
@@ -52,7 +53,7 @@ export default function Home() {
     setNacitani(true)
     setChyba('')
     const { data: rezData, error } = await supabase.from('rezervace').insert({
-      jmeno, telefon, sluzba: sluzba.nazev, datum, cas, email: email || null
+      jmeno, telefon, sluzba: sluzba.nazev, datum, cas, email: email || null, poznamka: poznamka || null
     }).select('cancel_token').single()
     if (error) {
       if (error.code === '23505') {
@@ -125,10 +126,11 @@ export default function Home() {
           <p className="text-white font-medium">{sluzba?.nazev}</p>
           <p className="text-zinc-400 text-sm mt-1">{datum} · {cas}</p>
         </div>
-        <button onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail('') }}
+        <button onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail(''); setPoznamka('') }}
           className="mt-6 w-full bg-white text-black py-3 rounded-2xl font-medium text-sm">
           Nová rezervace
         </button>
+
       </div>
     </div>
   )
@@ -200,7 +202,11 @@ export default function Home() {
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
             <input value={email} onChange={e => setEmail(e.target.value)}
               placeholder="Email (pro potvrzení)"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
+            <textarea value={poznamka} onChange={e => setPoznamka(e.target.value)}
+              placeholder="Poznámka (nepovinné)"
+              rows={2}
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500 resize-none" />
           </div>
         )}
 

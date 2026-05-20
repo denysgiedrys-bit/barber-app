@@ -150,6 +150,7 @@ export default function Admin() {
                         <div className="font-medium text-white">{r.jmeno}</div>
                         <div className="text-sm text-zinc-400">{r.sluzba} · {r.telefon}</div>
                         {r.email && <div className="text-xs text-zinc-500 truncate">{r.email}</div>}
+                        {r.poznamka && <div className="text-xs text-yellow-600 mt-0.5">📝 {r.poznamka}</div>}
                       </div>
                       <button onClick={() => zrusitRezervaci(r.id)} className="text-xs text-red-400 border border-red-900 px-3 py-1.5 rounded-xl hover:bg-red-950 transition-all shrink-0">
                         Zrušit
@@ -177,6 +178,7 @@ export default function Admin() {
                             <div className="font-medium text-white">{r.jmeno}</div>
                             <div className="text-sm text-zinc-400">{r.sluzba} · {r.telefon}</div>
                             {r.email && <div className="text-xs text-zinc-500 truncate">{r.email}</div>}
+                            {r.poznamka && <div className="text-xs text-yellow-600 mt-0.5">📝 {r.poznamka}</div>}
                           </div>
                           <button onClick={() => zrusitRezervaci(r.id)} className="text-xs text-red-400 border border-red-900 px-3 py-1.5 rounded-xl hover:bg-red-950 transition-all shrink-0">
                             Zrušit
