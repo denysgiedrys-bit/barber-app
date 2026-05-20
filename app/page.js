@@ -114,7 +114,7 @@ export default function Home() {
       <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl text-center max-w-sm w-full">
         <div className="text-5xl mb-4">✅</div>
         <h2 className="text-xl font-bold mb-2 text-white">Rezervace potvrzena!</h2>
-        <p className="text-zinc-400 text-sm">Potvrzení jsme zaslali na váš email.</p>
+        {email && <p className="text-zinc-400 text-sm">Potvrzení jsme zaslali na váš email.</p>}
         <div className="mt-4 bg-zinc-800 rounded-2xl p-4">
           <p className="text-white font-medium">{sluzba?.nazev}</p>
           <p className="text-zinc-400 text-sm mt-1">{datum} · {cas}</p>
