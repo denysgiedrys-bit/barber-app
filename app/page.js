@@ -229,13 +229,21 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <Logo size={44} />
             <div>
-              <h1 className="text-2xl font-bold text-white leading-tight">MCuts</h1>
+              <h1 className="text-2xl font-bold text-white leading-tight">matescutz</h1>
               <p className="text-zinc-400 text-sm">Vyberte službu, čas a potvrďte</p>
             </div>
           </div>
-          <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl whitespace-nowrap shrink-0">
-            Moje rez.
-          </a>
+          <div className="flex items-center gap-2 shrink-0">
+            <a href="https://www.instagram.com/matescutz?igsh=MXAwd2t4MzZ2ZThuOA==" target="_blank" rel="noopener noreferrer"
+              className="text-zinc-500 hover:text-pink-400 transition-colors border border-zinc-800 hover:border-pink-900 p-2 rounded-xl">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </a>
+            <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl whitespace-nowrap">
+              Moje rez.
+            </a>
+          </div>
         </div>
 
         <div className="flex items-center mb-6">

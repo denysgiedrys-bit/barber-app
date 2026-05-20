@@ -143,7 +143,7 @@ export default function Admin() {
         <div className="flex items-center gap-3 mb-6">
           <Logo size={40} />
           <div>
-            <h1 className="text-xl font-bold text-white leading-tight">MCuts</h1>
+            <h1 className="text-xl font-bold text-white leading-tight">matescutz</h1>
             <p className="text-zinc-400 text-xs">Admin panel</p>
           </div>
         </div>

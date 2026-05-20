@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "MCuts — Rezervace",
+  title: "matescutz — Rezervace",
   description: "Online rezervace střihu",
 };
 

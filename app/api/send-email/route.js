@@ -11,10 +11,10 @@ export async function POST(request) {
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: email,
-      subject: `MCuts — potvrzení rezervace`,
+      subject: `matescutz — potvrzení rezervace`,
       html: `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
-          <h2 style="color: #fbbf24;">✂️ MCuts</h2>
+          <h2 style="color: #fbbf24;">✂️ matescutz</h2>
           <h3>Rezervace potvrzena ✅</h3>
           <p>Dobrý den, <strong>${jmeno}</strong>,</p>
           <p>Vaše rezervace byla úspěšně přijata.</p>
