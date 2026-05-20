@@ -11,6 +11,7 @@ const SLUZBY = [
 const CASY = ['9:00','9:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']
 
 const nc = c => { const s = (c || '').slice(0, 5); return s.startsWith('0') ? s.slice(1) : s }
+const jeValidniTelefon = t => /^[+\d][\d\s\-()]{7,}$/.test(t.trim()) && t.replace(/\D/g, '').length >= 9
 const casNaMinuty = c => { const [h, m] = nc(c).split(':').map(Number); return h * 60 + m }
 
 export default function Home() {
@@ -199,7 +200,10 @@ export default function Home() {
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
             <input value={telefon} onChange={e => setTelefon(e.target.value)}
               placeholder="Telefon (+420 777 123 456)"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
+              className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 mb-1 text-sm text-white placeholder-zinc-500 outline-none transition-colors ${telefon && !jeValidniTelefon(telefon) ? 'border-red-700 focus:border-red-500' : 'border-zinc-700 focus:border-zinc-500'}`} />
+            {telefon && !jeValidniTelefon(telefon) && (
+              <p className="text-red-400 text-xs mb-2 px-1">Zadejte platné telefonní číslo</p>
+            )}
             <input value={email} onChange={e => setEmail(e.target.value)}
               placeholder="Email (pro potvrzení)"
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
@@ -212,7 +216,7 @@ export default function Home() {
 
         {chyba && <p className="text-red-400 text-sm mb-3 text-center">{chyba}</p>}
 
-        {jmeno && telefon && (
+        {jmeno && telefon && jeValidniTelefon(telefon) && (
           <button onClick={odeslat} disabled={nacitani}
             className="w-full bg-white text-black py-4 rounded-2xl font-medium text-sm hover:bg-zinc-100 transition-all">
             {nacitani ? 'Odesílám...' : `Potvrdit — ${sluzba?.nazev} ${datum} ${cas}`}
