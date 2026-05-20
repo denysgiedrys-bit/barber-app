@@ -24,6 +24,7 @@ export default function Home() {
   const [blokovane, setBlokovane] = useState([])
   const [blokovaneHodiny, setBlokovaneHodiny] = useState([])
   const [dostupnost, setDostupnost] = useState([])
+  const [opakovani, setOpakovani] = useState([])
   const [odeslano, setOdeslano] = useState(false)
   const [nacitani, setNacitani] = useState(false)
   const [chyba, setChyba] = useState('')
@@ -39,10 +40,12 @@ export default function Home() {
     const { data: blok } = await supabase.from('blokovane_dny').select('datum')
     const { data: hod } = await supabase.from('blokovane_hodiny').select('datum, cas')
     const { data: dost } = await supabase.from('dostupnost').select('datum, cas')
+    const { data: opak } = await supabase.from('opakujici_dostupnost').select('den_tydne, cas')
     if (rez) setRezervace(rez)
     if (blok) setBlokovane(blok.map(d => d.datum))
     if (hod) setBlokovaneHodiny(hod)
     if (dost) setDostupnost(dost)
+    if (opak) setOpakovani(opak)
   }
 
   async function odeslat() {
@@ -88,6 +91,9 @@ export default function Home() {
   function getCasyProDen(d) {
     const dostNorm = dostupnost.filter(x => x.datum === d).map(x => nc(x.cas))
     if (dostNorm.length > 0) return CASY.filter(c => dostNorm.includes(nc(c)))
+    const denTydne = new Date(d + 'T00:00:00').getDay()
+    const opakNorm = opakovani.filter(x => x.den_tydne === denTydne).map(x => nc(x.cas))
+    if (opakNorm.length > 0) return CASY.filter(c => opakNorm.includes(nc(c)))
     return CASY
   }
 

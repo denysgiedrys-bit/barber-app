@@ -11,9 +11,11 @@ export default function Admin() {
   const [blokovane, setBlokovane] = useState([])
   const [blokovaneHodiny, setBlokovaneHodiny] = useState([])
   const [dostupnost, setDostupnost] = useState([])
+  const [opakovani, setOpakovani] = useState([])
   const [novyDatum, setNovyDatum] = useState('')
   const [vybranyDen, setVybranyDen] = useState('')
   const [vybranyDenDost, setVybranyDenDost] = useState('')
+  const [vybranyDenTydne, setVybranyDenTydne] = useState(null)
   const [nacitani, setNacitani] = useState(true)
   const [aktivniTab, setAktivniTab] = useState('rezervace')
 
@@ -25,10 +27,12 @@ export default function Admin() {
     const { data: blok } = await supabase.from('blokovane_dny').select('*').order('datum')
     const { data: hod } = await supabase.from('blokovane_hodiny').select('*')
     const { data: dost } = await supabase.from('dostupnost').select('*')
+    const { data: opak } = await supabase.from('opakujici_dostupnost').select('*')
     if (rez) setRezervace(rez)
     if (blok) setBlokovane(blok)
     if (hod) setBlokovaneHodiny(hod)
     if (dost) setDostupnost(dost)
+    if (opak) setOpakovani(opak)
     setNacitani(false)
   }
 
@@ -57,6 +61,16 @@ export default function Admin() {
       await supabase.from('blokovane_hodiny').delete().eq('id', existuje.id)
     } else {
       await supabase.from('blokovane_hodiny').insert({ datum: vybranyDen, cas })
+    }
+    nactiData()
+  }
+
+  async function toggleOpakovani(denTydne, cas) {
+    const existuje = opakovani.find(o => o.den_tydne === denTydne && nc(o.cas) === nc(cas))
+    if (existuje) {
+      await supabase.from('opakujici_dostupnost').delete().eq('id', existuje.id)
+    } else {
+      await supabase.from('opakujici_dostupnost').insert({ den_tydne: denTydne, cas })
     }
     nactiData()
   }
@@ -202,16 +216,54 @@ export default function Admin() {
 
         {/* Rozvrh */}
         {aktivniTab === 'rozvrh' && (
-          <div>
-            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 mb-4">
-              <p className="text-sm text-white font-medium mb-1">Kdy můžete stříhat?</p>
-              <p className="text-xs text-zinc-500 mb-3">Vyberte den, označte dostupné hodiny nebo zavřete celý den.</p>
+          <div className="flex flex-col gap-4">
+
+            {/* Týdenní rozvrh */}
+            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+              <p className="text-sm text-white font-medium mb-1">Týdenní rozvrh</p>
+              <p className="text-xs text-zinc-500 mb-3">Nastavte výchozí hodiny pro každý den v týdnu. Platí opakovaně každý týden.</p>
+              <div className="flex gap-2 mb-3 flex-wrap">
+                {[['Po',1],['Út',2],['St',3],['Čt',4],['Pá',5],['So',6]].map(([label, den]) => {
+                  const pocet = opakovani.filter(o => o.den_tydne === den).length
+                  return (
+                    <button key={den} onClick={() => setVybranyDenTydne(vybranyDenTydne === den ? null : den)}
+                      className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex flex-col items-center min-w-10 ${
+                        vybranyDenTydne === den ? 'bg-white text-black' : pocet > 0 ? 'bg-green-950 text-green-300 border border-green-800' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                      }`}>
+                      <span>{label}</span>
+                      {pocet > 0 && <span className="text-xs opacity-60">{pocet}h</span>}
+                    </button>
+                  )
+                })}
+              </div>
+              {vybranyDenTydne && (
+                <div className="grid grid-cols-4 gap-2">
+                  {CASY.map(c => {
+                    const aktivni = opakovani.some(o => o.den_tydne === vybranyDenTydne && nc(o.cas) === nc(c))
+                    return (
+                      <button key={c} onClick={() => toggleOpakovani(vybranyDenTydne, c)}
+                        className={`p-2.5 rounded-xl text-sm font-medium transition-all ${
+                          aktivni ? 'bg-green-900 text-green-300 border border-green-700' :
+                          'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:border-zinc-500'
+                        }`}>
+                        {c}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Výjimka pro konkrétní den */}
+            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+              <p className="text-sm text-white font-medium mb-1">Výjimka pro konkrétní den</p>
+              <p className="text-xs text-zinc-500 mb-3">Přepíše týdenní rozvrh jen pro vybraný datum.</p>
               <input type="date" value={vybranyDenDost} onChange={e => setVybranyDenDost(e.target.value)}
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-zinc-500" />
             </div>
             {vybranyDenDost && (
               <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-                <p className="text-sm text-zinc-400 mb-3">Označte hodiny kdy jste dostupní</p>
+                <p className="text-sm text-zinc-400 mb-3">Hodiny pro {formatDatum(vybranyDenDost)}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {CASY.map(c => {
                     const dostupny = dostupnost.some(d => d.datum === vybranyDenDost && nc(d.cas) === nc(c))
