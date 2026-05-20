@@ -30,6 +30,7 @@ export default function Home() {
   const [opakovani, setOpakovani] = useState([])
   const [odeslano, setOdeslano] = useState(false)
   const [nacitani, setNacitani] = useState(false)
+  const [prvniNacitani, setPrvniNacitani] = useState(true)
   const [chyba, setChyba] = useState('')
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Home() {
     if (hod) setBlokovaneHodiny(hod)
     if (dost) setDostupnost(dost)
     if (opak) setOpakovani(opak)
+    setPrvniNacitani(false)
   }
 
   async function odeslat() {
@@ -117,6 +119,40 @@ export default function Home() {
     if (blokovaneHodiny.some(h => h.datum === datum && nc(h.cas) === nc(c))) return true
     return false
   }
+
+  if (prvniNacitani) return (
+    <div className="min-h-screen bg-zinc-950 py-8 px-4">
+      <div className="max-w-md mx-auto animate-pulse">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-zinc-800" />
+            <div>
+              <div className="h-5 w-20 bg-zinc-800 rounded-lg mb-1" />
+              <div className="h-3 w-32 bg-zinc-800 rounded-lg" />
+            </div>
+          </div>
+          <div className="h-8 w-28 bg-zinc-900 rounded-xl border border-zinc-800" />
+        </div>
+        <div className="flex items-center mb-6 gap-1">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="flex items-center flex-1 last:flex-none">
+              <div className="flex flex-col items-center">
+                <div className="w-7 h-7 rounded-full bg-zinc-800" />
+                <div className="h-2 w-8 bg-zinc-800 rounded mt-1" />
+              </div>
+              {i < 4 && <div className="flex-1 h-px mx-2 mb-4 bg-zinc-800" />}
+            </div>
+          ))}
+        </div>
+        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
+          <div className="h-3 w-16 bg-zinc-800 rounded mb-3" />
+          <div className="grid grid-cols-3 gap-2">
+            {[1,2,3].map(i => <div key={i} className="h-16 bg-zinc-800 rounded-xl" />)}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 
   if (odeslano) {
     const [year, month, day] = datum.split('-')

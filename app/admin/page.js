@@ -104,7 +104,38 @@ export default function Admin() {
     return `${dny[date.getDay()]} ${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`
   }
 
-  if (nacitani) return <div className="min-h-screen flex items-center justify-center bg-zinc-950"><p className="text-zinc-400">Načítám...</p></div>
+  if (nacitani) return (
+    <div className="min-h-screen bg-zinc-950 py-8 px-4">
+      <div className="max-w-2xl mx-auto animate-pulse">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-zinc-800" />
+          <div>
+            <div className="h-5 w-20 bg-zinc-800 rounded-lg mb-1" />
+            <div className="h-3 w-16 bg-zinc-800 rounded-lg" />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          {[1,2,3].map(i => <div key={i} className="h-20 bg-zinc-900 rounded-2xl border border-zinc-800" />)}
+        </div>
+        <div className="flex gap-2 mb-5">
+          {[1,2,3,4].map(i => <div key={i} className="h-9 w-24 bg-zinc-900 rounded-xl border border-zinc-800" />)}
+        </div>
+        {[1,2,3].map(i => (
+          <div key={i} className="bg-zinc-900 rounded-2xl p-4 flex items-center gap-4 border border-zinc-800 mb-2">
+            <div className="w-12 text-center">
+              <div className="h-3 w-10 bg-zinc-800 rounded mb-1 mx-auto" />
+              <div className="h-6 w-12 bg-zinc-800 rounded" />
+            </div>
+            <div className="flex-1">
+              <div className="h-4 w-32 bg-zinc-800 rounded mb-2" />
+              <div className="h-3 w-48 bg-zinc-800 rounded" />
+            </div>
+            <div className="h-8 w-16 bg-zinc-800 rounded-xl" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
