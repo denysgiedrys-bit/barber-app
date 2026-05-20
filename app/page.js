@@ -166,7 +166,7 @@ export default function Home() {
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold mb-1 text-white">✂️ Rezervace</h1>
+            <h1 className="text-2xl font-bold mb-1 text-white">✂️ MCuts</h1>
             <p className="text-zinc-400 text-sm">Vyberte službu, čas a potvrďte</p>
           </div>
           <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl">

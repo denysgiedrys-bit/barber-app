@@ -32,8 +32,9 @@ function MojeRezervaceForm() {
     <div className="min-h-screen bg-zinc-950 py-8 px-4">
       <div className="max-w-md mx-auto">
         <a href="/" className="text-zinc-500 text-sm hover:text-zinc-300 transition-colors mb-6 block">← Zpět</a>
-        <h1 className="text-2xl font-bold mb-1 text-white">Moje rezervace</h1>
-        <p className="text-zinc-400 text-sm mb-6">Zadejte telefonní číslo pro zobrazení rezervací</p>
+        <h1 className="text-2xl font-bold mb-1 text-white">✂️ MCuts</h1>
+        <p className="text-zinc-400 text-sm mb-1">Moje rezervace</p>
+        <p className="text-zinc-400 text-sm mb-6">Zadejte telefonní číslo pro zobrazení vašich rezervací</p>
 
         <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-4">
           <div className="flex gap-2">
