@@ -28,8 +28,8 @@ body {
 
 .barber-bg {
   background:
-    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(251, 191, 36, 0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 30% at 100% 100%, rgba(251, 191, 36, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(251, 191, 36, 0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(251, 191, 36, 0.08) 0%, transparent 60%),
     #09090b;
   min-height: 100vh;
 }
