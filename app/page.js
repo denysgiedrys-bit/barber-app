@@ -121,7 +121,7 @@ export default function Home() {
   }
 
   if (prvniNacitani) return (
-    <div className="min-h-screen bg-zinc-950 py-8 px-4">
+    <div className="barber-bg py-8 px-4">
       <div className="max-w-md mx-auto animate-pulse">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -167,7 +167,7 @@ export default function Home() {
     const icsUrl = `data:text/calendar;charset=utf8,${encodeURIComponent(ics)}`
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
+      <div className="barber-bg flex items-center justify-center px-4">
         <div className="max-w-sm w-full text-center">
 
           {/* Animovaná fajfka */}
@@ -223,7 +223,7 @@ export default function Home() {
   const kroky = ['Služba', 'Den', 'Čas', 'Údaje']
 
   return (
-    <div className="min-h-screen bg-zinc-950 py-8 px-4">
+    <div className="barber-bg py-8 px-4">
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
