@@ -117,24 +117,46 @@ export default function Home() {
     return false
   }
 
-  if (odeslano) return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
-      <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl text-center max-w-sm w-full">
-        <div className="text-5xl mb-4">✅</div>
-        <h2 className="text-xl font-bold mb-2 text-white">Rezervace potvrzena!</h2>
-        {email && <p className="text-zinc-400 text-sm">Potvrzení jsme zaslali na váš email.</p>}
-        <div className="mt-4 bg-zinc-800 rounded-2xl p-4">
-          <p className="text-white font-medium">{sluzba?.nazev}</p>
-          <p className="text-zinc-400 text-sm mt-1">{datum} · {cas}</p>
-        </div>
-        <button onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail(''); setPoznamka('') }}
-          className="mt-6 w-full bg-white text-black py-3 rounded-2xl font-medium text-sm">
-          Nová rezervace
-        </button>
+  if (odeslano) {
+    const [year, month, day] = datum.split('-')
+    const [hour, minute] = cas.split(':')
+    const startStr = `${year}${month}${day}T${hour.padStart(2,'0')}${(minute||'00').padStart(2,'0')}00`
+    const endDate = new Date(`${datum}T${hour.padStart(2,'0')}:${(minute||'00').padStart(2,'0')}:00`)
+    endDate.setMinutes(endDate.getMinutes() + (sluzba?.trvani || 30))
+    const endStr = `${endDate.getFullYear()}${String(endDate.getMonth()+1).padStart(2,'0')}${String(endDate.getDate()).padStart(2,'0')}T${String(endDate.getHours()).padStart(2,'0')}${String(endDate.getMinutes()).padStart(2,'0')}00`
+    const nazev = encodeURIComponent(`Barber — ${sluzba?.nazev}`)
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${nazev}&dates=${startStr}/${endStr}`
+    const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nDTSTART:${startStr}\r\nDTEND:${endStr}\r\nSUMMARY:Barber — ${sluzba?.nazev}\r\nEND:VEVENT\r\nEND:VCALENDAR`
+    const icsUrl = `data:text/calendar;charset=utf8,${encodeURIComponent(ics)}`
 
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
+        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl text-center max-w-sm w-full">
+          <div className="text-5xl mb-4">✅</div>
+          <h2 className="text-xl font-bold mb-2 text-white">Rezervace potvrzena!</h2>
+          {email && <p className="text-zinc-400 text-sm">Potvrzení jsme zaslali na váš email.</p>}
+          <div className="mt-4 bg-zinc-800 rounded-2xl p-4">
+            <p className="text-white font-medium">{sluzba?.nazev}</p>
+            <p className="text-zinc-400 text-sm mt-1">{datum} · {cas}</p>
+          </div>
+          <div className="mt-4 flex gap-2">
+            <a href={googleUrl} target="_blank" rel="noopener noreferrer"
+              className="flex-1 bg-zinc-800 border border-zinc-700 text-white py-2.5 rounded-2xl text-xs font-medium hover:border-zinc-500 transition-all">
+              Google Kalendář
+            </a>
+            <a href={icsUrl} download="rezervace.ics"
+              className="flex-1 bg-zinc-800 border border-zinc-700 text-white py-2.5 rounded-2xl text-xs font-medium hover:border-zinc-500 transition-all">
+              Apple / Outlook
+            </a>
+          </div>
+          <button onClick={() => { setOdeslano(false); setSluzba(null); setDatum(''); setCas(''); setJmeno(''); setTelefon(''); setEmail(''); setPoznamka('') }}
+            className="mt-3 w-full bg-white text-black py-3 rounded-2xl font-medium text-sm">
+            Nová rezervace
+          </button>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 py-8 px-4">
