@@ -107,7 +107,7 @@ export default function Admin() {
         </div>
 
         <div className="flex gap-2 mb-5 flex-wrap">
-          {[['rezervace','Rezervace'],['rozvrh','Rozvrh'],['hodiny','Blokovat hodiny']].map(([id, label]) => (
+          {[['rezervace','Rezervace'],['rozvrh','Rozvrh'],['dny','Blokovat dny']].map(([id, label]) => (
             <button key={id} onClick={() => setAktivniTab(id)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${aktivniTab === id ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}>
               {label}
@@ -209,90 +209,57 @@ export default function Admin() {
               <input type="date" value={vybranyDenDost} onChange={e => setVybranyDenDost(e.target.value)}
                 className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-zinc-500" />
             </div>
-            {vybranyDenDost && (() => {
-              const jeBlokovany = blokovane.some(b => b.datum === vybranyDenDost)
-              return (
-                <div className="flex flex-col gap-3">
-                  <button onClick={async () => {
-                    if (jeBlokovany) {
-                      const b = blokovane.find(b => b.datum === vybranyDenDost)
-                      await supabase.from('blokovane_dny').delete().eq('id', b.id)
-                    } else {
-                      await supabase.from('blokovane_dny').insert({ datum: vybranyDenDost })
-                    }
-                    nactiData()
-                  }} className={`w-full py-3 rounded-2xl text-sm font-medium transition-all border ${
-                    jeBlokovany ? 'bg-red-950 border-red-800 text-red-300 hover:bg-red-900' : 'bg-zinc-900 border-zinc-700 text-zinc-300 hover:border-zinc-500'
-                  }`}>
-                    {jeBlokovany ? '🔴 Den je zavřený — klikni pro otevření' : 'Zavřít celý den'}
-                  </button>
-                  {!jeBlokovany && (
-                    <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-                      <p className="text-sm text-zinc-400 mb-3">Označte hodiny kdy jste dostupní</p>
-                      <div className="grid grid-cols-4 gap-2">
-                        {CASY.map(c => {
-                          const dostupny = dostupnost.some(d => d.datum === vybranyDenDost && nc(d.cas) === nc(c))
-                          const obsazen = rezervace.some(r => r.datum === vybranyDenDost && nc(r.cas) === nc(c))
-                          return (
-                            <button key={c} onClick={() => toggleDostupnost(c)}
-                              className={`p-2.5 rounded-xl text-sm font-medium transition-all relative ${
-                                obsazen && dostupny ? 'bg-blue-900 text-blue-200 border border-blue-700' :
-                                dostupny ? 'bg-green-900 text-green-300 border border-green-700' :
-                                'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:border-zinc-500'
-                              }`}>
-                              {c}
-                              {obsazen && <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400 rounded-full"></span>}
-                            </button>
-                          )
-                        })}
-                      </div>
-                      <div className="flex gap-4 mt-3 text-xs text-zinc-500">
-                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-green-900 border border-green-700 inline-block"></span>Dostupné</span>
-                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-blue-900 border border-blue-700 inline-block"></span>Obsazené</span>
-                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-zinc-800 border border-zinc-700 inline-block"></span>Nedostupné</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )
-            })()}
-          </div>
-        )}
-
-        {/* Blokovat hodiny */}
-        {aktivniTab === 'hodiny' && (
-          <div>
-            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 mb-4">
-              <p className="text-sm text-zinc-400 mb-3">Vyberte den</p>
-              <input type="date" value={vybranyDen} onChange={e => setVybranyDen(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-zinc-500" />
-            </div>
-            {vybranyDen && (
+            {vybranyDenDost && (
               <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-                <p className="text-sm text-zinc-400 mb-3">Klikněte na hodiny které chcete zablokovat</p>
+                <p className="text-sm text-zinc-400 mb-3">Označte hodiny kdy jste dostupní</p>
                 <div className="grid grid-cols-4 gap-2">
                   {CASY.map(c => {
-                    const zablokovan = blokovaneHodiny.some(h => h.datum === vybranyDen && nc(h.cas) === nc(c))
-                    const obsazen = rezervace.some(r => r.datum === vybranyDen && nc(r.cas) === nc(c))
+                    const dostupny = dostupnost.some(d => d.datum === vybranyDenDost && nc(d.cas) === nc(c))
+                    const obsazen = rezervace.some(r => r.datum === vybranyDenDost && nc(r.cas) === nc(c))
                     return (
-                      <button key={c} onClick={() => !obsazen && toggleHodina(c)} disabled={obsazen}
-                        className={`p-2.5 rounded-xl text-sm font-medium transition-all ${
-                          obsazen ? 'bg-blue-900 text-blue-300 border border-blue-700 cursor-default' :
-                          zablokovan ? 'bg-red-900 text-red-300 border border-red-700' :
-                          'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:border-zinc-500'
+                      <button key={c} onClick={() => toggleDostupnost(c)}
+                        className={`p-2.5 rounded-xl text-sm font-medium transition-all relative ${
+                          obsazen && dostupny ? 'bg-blue-900 text-blue-200 border border-blue-700' :
+                          dostupny ? 'bg-green-900 text-green-300 border border-green-700' :
+                          'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:border-zinc-500'
                         }`}>
                         {c}
+                        {obsazen && <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400 rounded-full"></span>}
                       </button>
                     )
                   })}
                 </div>
                 <div className="flex gap-4 mt-3 text-xs text-zinc-500">
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-green-900 border border-green-700 inline-block"></span>Dostupné</span>
                   <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-blue-900 border border-blue-700 inline-block"></span>Obsazené</span>
-                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-red-900 border border-red-700 inline-block"></span>Zablokované</span>
-                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-zinc-800 border border-zinc-700 inline-block"></span>Volné</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-zinc-800 border border-zinc-700 inline-block"></span>Nedostupné</span>
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Blokovat dny */}
+        {aktivniTab === 'dny' && (
+          <div>
+            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 flex gap-2 mb-3">
+              <input type="date" value={novyDatum} onChange={e => setNovyDatum(e.target.value)}
+                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-zinc-500" />
+              <button onClick={blokovatDen} className="bg-white text-black px-4 py-2 rounded-xl text-sm font-medium">
+                Zavřít
+              </button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {blokovane.length === 0 && <div className="bg-zinc-900 rounded-2xl p-6 text-center text-zinc-500 border border-zinc-800">Žádné zavřené dny</div>}
+              {blokovane.map(b => (
+                <div key={b.id} className="bg-zinc-900 rounded-2xl p-4 flex items-center justify-between border border-zinc-800">
+                  <span className="text-white font-medium">{formatDatum(b.datum)}</span>
+                  <button onClick={() => odblokovatDen(b.id)} className="text-xs text-zinc-400 border border-zinc-700 px-3 py-1.5 rounded-xl hover:border-zinc-500 transition-all">
+                    Otevřít
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
