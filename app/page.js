@@ -254,20 +254,20 @@ export default function Home() {
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">4. Vaše údaje</p>
             <input value={jmeno} onChange={e => setJmeno(e.target.value)}
               placeholder="Jméno a příjmení"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-amber-400" />
             <input value={telefon} onChange={e => setTelefon(e.target.value)}
               placeholder="Telefon (+420 777 123 456)"
-              className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 mb-1 text-sm text-white placeholder-zinc-500 outline-none transition-colors ${telefon && !jeValidniTelefon(telefon) ? 'border-red-700 focus:border-red-500' : 'border-zinc-700 focus:border-zinc-500'}`} />
+              className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 mb-1 text-sm text-white placeholder-zinc-500 outline-none transition-colors ${telefon && !jeValidniTelefon(telefon) ? 'border-red-700 focus:border-red-500' : 'border-zinc-700 focus:border-amber-400'}`} />
             {telefon && !jeValidniTelefon(telefon) && (
               <p className="text-red-400 text-xs mb-2 px-1">Zadejte platné telefonní číslo</p>
             )}
             <input value={email} onChange={e => setEmail(e.target.value)}
               placeholder="Email (pro potvrzení)"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500" />
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 mb-2.5 text-sm text-white placeholder-zinc-500 outline-none focus:border-amber-400" />
             <textarea value={poznamka} onChange={e => setPoznamka(e.target.value)}
               placeholder="Poznámka (nepovinné)"
               rows={2}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none focus:border-zinc-500 resize-none" />
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none focus:border-amber-400 resize-none" />
           </div>
         )}
 
