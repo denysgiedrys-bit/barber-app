@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 const SLUZBY = [
@@ -10,6 +10,8 @@ const SLUZBY = [
 
 const CASY = ['9:00','9:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']
 
+const nc = c => { const s = (c || '').slice(0, 5); return s.startsWith('0') ? s.slice(1) : s }
+
 export default function Home() {
   const [sluzba, setSluzba] = useState(null)
   const [datum, setDatum] = useState('')
@@ -17,33 +19,29 @@ export default function Home() {
   const [jmeno, setJmeno] = useState('')
   const [telefon, setTelefon] = useState('')
   const [email, setEmail] = useState('')
-  const [obsazene, setObsazene] = useState([])
+  const [rezervace, setRezervace] = useState([])
   const [blokovane, setBlokovane] = useState([])
   const [blokovaneHodiny, setBlokovaneHodiny] = useState([])
+  const [dostupnost, setDostupnost] = useState([])
   const [odeslano, setOdeslano] = useState(false)
   const [nacitani, setNacitani] = useState(false)
   const [chyba, setChyba] = useState('')
 
-  const nactiObsazene = useCallback(async (d) => {
-    const { data } = await supabase.from('rezervace').select('cas').eq('datum', d)
-    if (data) setObsazene(data.map(r => r.cas.slice(0,5)))
+  useEffect(() => {
+    nactiData()
+    const interval = setInterval(nactiData, 10000)
+    return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    if (datum) {
-      nactiObsazene(datum)
-      const interval = setInterval(() => nactiObsazene(datum), 5000)
-      return () => clearInterval(interval)
-    }
-  }, [datum, nactiObsazene])
-
-  useEffect(() => { nactiBlokovane() }, [])
-
-  async function nactiBlokovane() {
+  async function nactiData() {
+    const { data: rez } = await supabase.from('rezervace').select('datum, cas')
     const { data: blok } = await supabase.from('blokovane_dny').select('datum')
     const { data: hod } = await supabase.from('blokovane_hodiny').select('datum, cas')
+    const { data: dost } = await supabase.from('dostupnost').select('datum, cas')
+    if (rez) setRezervace(rez)
     if (blok) setBlokovane(blok.map(d => d.datum))
     if (hod) setBlokovaneHodiny(hod)
+    if (dost) setDostupnost(dost)
   }
 
   async function odeslat() {
@@ -55,7 +53,7 @@ export default function Home() {
     if (error) {
       if (error.code === '23505') {
         setChyba('Tento čas je již obsazený. Vyberte prosím jiný.')
-        await nactiObsazene(datum)
+        await nactiData()
         setCas('')
       } else {
         setChyba('Něco se pokazilo. Zkuste to znovu.')
@@ -70,7 +68,7 @@ export default function Home() {
         body: JSON.stringify({ jmeno, email, sluzba: sluzba.nazev, datum, cas })
       })
     }
-    await nactiObsazene(datum)
+    await nactiData()
     setNacitani(false)
     setOdeslano(true)
   }
@@ -86,9 +84,15 @@ export default function Home() {
     return dny
   }
 
+  function getCasyProDen(d) {
+    const dostNorm = dostupnost.filter(x => x.datum === d).map(x => nc(x.cas))
+    if (dostNorm.length > 0) return CASY.filter(c => dostNorm.includes(nc(c)))
+    return CASY
+  }
+
   function jeCasNedostupny(c) {
-    if (obsazene.includes(c)) return true
-    if (blokovaneHodiny.some(h => h.datum === datum && h.cas.slice(0,5) === c)) return true
+    if (rezervace.some(r => r.datum === datum && nc(r.cas) === nc(c))) return true
+    if (blokovaneHodiny.some(h => h.datum === datum && nc(h.cas) === nc(c))) return true
     return false
   }
 
@@ -152,8 +156,8 @@ export default function Home() {
         {datum && (
           <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800 mb-3">
             <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wider">3. Čas</p>
-            <div className="grid grid-cols-4 gap-2">
-              {CASY.map(c => {
+<div className="grid grid-cols-4 gap-2">
+              {getCasyProDen(datum).map(c => {
                 const nedostupny = jeCasNedostupny(c)
                 return (
                   <button key={c} disabled={nedostupny} onClick={() => setCas(c)}

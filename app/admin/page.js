@@ -4,12 +4,16 @@ import { supabase } from '../../lib/supabase'
 
 const CASY = ['9:00','9:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']
 
+const nc = c => { const s = (c || '').slice(0, 5); return s.startsWith('0') ? s.slice(1) : s }
+
 export default function Admin() {
   const [rezervace, setRezervace] = useState([])
   const [blokovane, setBlokovane] = useState([])
   const [blokovaneHodiny, setBlokovaneHodiny] = useState([])
+  const [dostupnost, setDostupnost] = useState([])
   const [novyDatum, setNovyDatum] = useState('')
   const [vybranyDen, setVybranyDen] = useState('')
+  const [vybranyDenDost, setVybranyDenDost] = useState('')
   const [nacitani, setNacitani] = useState(true)
   const [aktivniTab, setAktivniTab] = useState('rezervace')
 
@@ -20,9 +24,11 @@ export default function Admin() {
     const { data: rez } = await supabase.from('rezervace').select('*').order('datum').order('cas')
     const { data: blok } = await supabase.from('blokovane_dny').select('*').order('datum')
     const { data: hod } = await supabase.from('blokovane_hodiny').select('*')
+    const { data: dost } = await supabase.from('dostupnost').select('*')
     if (rez) setRezervace(rez)
     if (blok) setBlokovane(blok)
     if (hod) setBlokovaneHodiny(hod)
+    if (dost) setDostupnost(dost)
     setNacitani(false)
   }
 
@@ -46,11 +52,22 @@ export default function Admin() {
 
   async function toggleHodina(cas) {
     if (!vybranyDen) return
-    const existuje = blokovaneHodiny.find(h => h.datum === vybranyDen && h.cas.slice(0,5) === cas)
+    const existuje = blokovaneHodiny.find(h => h.datum === vybranyDen && nc(h.cas) === nc(cas))
     if (existuje) {
       await supabase.from('blokovane_hodiny').delete().eq('id', existuje.id)
     } else {
       await supabase.from('blokovane_hodiny').insert({ datum: vybranyDen, cas })
+    }
+    nactiData()
+  }
+
+  async function toggleDostupnost(cas) {
+    if (!vybranyDenDost) return
+    const existuje = dostupnost.find(d => d.datum === vybranyDenDost && nc(d.cas) === nc(cas))
+    if (existuje) {
+      await supabase.from('dostupnost').delete().eq('id', existuje.id)
+    } else {
+      await supabase.from('dostupnost').insert({ datum: vybranyDenDost, cas })
     }
     nactiData()
   }
@@ -67,7 +84,6 @@ export default function Admin() {
         <h1 className="text-2xl font-bold mb-1 text-white">Admin panel</h1>
         <p className="text-zinc-400 mb-6 text-sm">Správa rezervací a rozvrhu</p>
 
-        {/* Statistiky */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[['Dnes', dnesniRez.length], ['Nadcházející', budouciRez.length], ['Celkem', rezervace.length]].map(([label, val]) => (
             <div key={label} className="bg-zinc-900 rounded-2xl p-4 text-center border border-zinc-800">
@@ -77,9 +93,8 @@ export default function Admin() {
           ))}
         </div>
 
-        {/* Taby */}
-        <div className="flex gap-2 mb-5">
-          {[['rezervace','Rezervace'],['hodiny','Blokovat hodiny'],['dny','Blokovat dny']].map(([id, label]) => (
+        <div className="flex gap-2 mb-5 flex-wrap">
+          {[['rezervace','Rezervace'],['dostupnost','Dostupnost'],['hodiny','Blokovat hodiny'],['dny','Blokovat dny']].map(([id, label]) => (
             <button key={id} onClick={() => setAktivniTab(id)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${aktivniTab === id ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}>
               {label}
@@ -109,6 +124,45 @@ export default function Admin() {
           </div>
         )}
 
+        {/* Dostupnost */}
+        {aktivniTab === 'dostupnost' && (
+          <div>
+            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 mb-4">
+              <p className="text-sm text-white font-medium mb-1">Kdy můžete stříhat?</p>
+              <p className="text-xs text-zinc-500 mb-3">Vyberte den a označte hodiny. Pokud pro daný den nenastavíte nic, zákazníci uvidí výchozí časy.</p>
+              <input type="date" value={vybranyDenDost} onChange={e => setVybranyDenDost(e.target.value)}
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-zinc-500" />
+            </div>
+            {vybranyDenDost && (
+              <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+                <p className="text-sm text-zinc-400 mb-3">Klikněte na hodiny kdy jste dostupní</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {CASY.map(c => {
+                    const dostupny = dostupnost.some(d => d.datum === vybranyDenDost && nc(d.cas) === nc(c))
+                    const obsazen = rezervace.some(r => r.datum === vybranyDenDost && nc(r.cas) === nc(c))
+                    return (
+                      <button key={c} onClick={() => toggleDostupnost(c)}
+                        className={`p-2.5 rounded-xl text-sm font-medium transition-all relative ${
+                          obsazen && dostupny ? 'bg-blue-900 text-blue-200 border border-blue-700' :
+                          dostupny ? 'bg-green-900 text-green-300 border border-green-700' :
+                          'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:border-zinc-500'
+                        }`}>
+                        {c}
+                        {obsazen && <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-400 rounded-full"></span>}
+                      </button>
+                    )
+                  })}
+                </div>
+                <div className="flex gap-4 mt-3 text-xs text-zinc-500">
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-green-900 border border-green-700 inline-block"></span>Dostupné</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-blue-900 border border-blue-700 inline-block"></span>Obsazené</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-zinc-800 border border-zinc-700 inline-block"></span>Nedostupné</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Blokovat hodiny */}
         {aktivniTab === 'hodiny' && (
           <div>
@@ -122,16 +176,25 @@ export default function Admin() {
                 <p className="text-sm text-zinc-400 mb-3">Klikněte na hodiny které chcete zablokovat</p>
                 <div className="grid grid-cols-4 gap-2">
                   {CASY.map(c => {
-                    const zablokovan = blokovaneHodiny.some(h => h.datum === vybranyDen && h.cas.slice(0,5) === c)
+                    const zablokovan = blokovaneHodiny.some(h => h.datum === vybranyDen && nc(h.cas) === nc(c))
+                    const obsazen = rezervace.some(r => r.datum === vybranyDen && nc(r.cas) === nc(c))
                     return (
-                      <button key={c} onClick={() => toggleHodina(c)}
-                        className={`p-2.5 rounded-xl text-sm font-medium transition-all ${zablokovan ? 'bg-red-900 text-red-300 border border-red-700' : 'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:border-zinc-500'}`}>
+                      <button key={c} onClick={() => !obsazen && toggleHodina(c)} disabled={obsazen}
+                        className={`p-2.5 rounded-xl text-sm font-medium transition-all ${
+                          obsazen ? 'bg-blue-900 text-blue-300 border border-blue-700 cursor-default' :
+                          zablokovan ? 'bg-red-900 text-red-300 border border-red-700' :
+                          'bg-zinc-800 text-zinc-300 border border-zinc-700 hover:border-zinc-500'
+                        }`}>
                         {c}
                       </button>
                     )
                   })}
                 </div>
-                <p className="text-xs text-zinc-600 mt-3">Červené = zablokované</p>
+                <div className="flex gap-4 mt-3 text-xs text-zinc-500">
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-blue-900 border border-blue-700 inline-block"></span>Obsazené</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-red-900 border border-red-700 inline-block"></span>Zablokované</span>
+                  <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded bg-zinc-800 border border-zinc-700 inline-block"></span>Volné</span>
+                </div>
               </div>
             )}
           </div>
