@@ -166,7 +166,7 @@ export default function Home() {
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold mb-1 text-white">Rezervace</h1>
+            <h1 className="text-2xl font-bold mb-1 text-white">✂️ Rezervace</h1>
             <p className="text-zinc-400 text-sm">Vyberte službu, čas a potvrďte</p>
           </div>
           <a href="/moje-rezervace" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors border border-zinc-800 px-3 py-2 rounded-xl">
@@ -182,13 +182,13 @@ export default function Home() {
             return (
               <div key={i} className="flex items-center flex-1 last:flex-none">
                 <div className="flex flex-col items-center">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${hotovy ? 'bg-white text-black' : aktivni ? 'bg-white text-black ring-4 ring-white/20' : 'bg-zinc-800 text-zinc-500 border border-zinc-700'}`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${hotovy ? 'bg-amber-400 text-black' : aktivni ? 'bg-amber-400 text-black ring-4 ring-amber-400/25' : 'bg-zinc-800 text-zinc-500 border border-zinc-700'}`}>
                     {hotovy ? '✓' : cislo}
                   </div>
-                  <span className={`text-xs mt-1 transition-all ${aktivni ? 'text-white font-medium' : hotovy ? 'text-zinc-400' : 'text-zinc-600'}`}>{label}</span>
+                  <span className={`text-xs mt-1 transition-all ${aktivni ? 'text-amber-400 font-medium' : hotovy ? 'text-zinc-400' : 'text-zinc-600'}`}>{label}</span>
                 </div>
                 {i < kroky.length - 1 && (
-                  <div className={`flex-1 h-px mx-2 mb-4 transition-all ${krok > cislo ? 'bg-white' : 'bg-zinc-800'}`} />
+                  <div className={`flex-1 h-px mx-2 mb-4 transition-all ${krok > cislo ? 'bg-amber-400' : 'bg-zinc-800'}`} />
                 )}
               </div>
             )
@@ -200,7 +200,7 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-2">
             {SLUZBY.map(s => (
               <button key={s.id} onClick={() => setSluzba(s)}
-                className={`p-3 rounded-xl border text-sm transition-all ${sluzba?.id === s.id ? 'border-white bg-white text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-500'}`}>
+                className={`p-3 rounded-xl border text-sm transition-all ${sluzba?.id === s.id ? 'border-amber-400 bg-amber-400 text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-600'}`}>
                 <div className="font-medium">{s.nazev}</div>
                 <div className="text-xs opacity-60 mt-0.5">{s.trvani} min</div>
               </button>
@@ -218,7 +218,7 @@ export default function Home() {
                 const dnyNazvy = ['Ne','Po','Út','St','Čt','Pá','So']
                 return (
                   <button key={str} disabled={jeBlokovany} onClick={() => { setDatum(str); setCas('') }}
-                    className={`p-2 rounded-xl border text-sm transition-all ${jeBlokovany ? 'opacity-20 cursor-not-allowed border-zinc-800' : datum === str ? 'border-white bg-white text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-500'}`}>
+                    className={`p-2 rounded-xl border text-sm transition-all ${jeBlokovany ? 'opacity-20 cursor-not-allowed border-zinc-800' : datum === str ? 'border-amber-400 bg-amber-400 text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-600'}`}>
                     <div className="text-xs opacity-60">{dnyNazvy[d.getDay()]}</div>
                     <div className="font-medium">{d.getDate()}.{d.getMonth()+1}</div>
                   </button>
@@ -236,7 +236,7 @@ export default function Home() {
                 const nedostupny = jeCasNedostupny(c)
                 return (
                   <button key={c} disabled={nedostupny} onClick={() => setCas(c)}
-                    className={`p-2.5 rounded-xl border text-sm transition-all ${nedostupny ? 'opacity-30 line-through cursor-not-allowed border-zinc-800 text-zinc-600' : cas === c ? 'border-white bg-white text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-500'}`}>
+                    className={`p-2.5 rounded-xl border text-sm transition-all ${nedostupny ? 'opacity-30 line-through cursor-not-allowed border-zinc-800 text-zinc-600' : cas === c ? 'border-amber-400 bg-amber-400 text-black' : 'border-zinc-700 text-zinc-300 hover:border-zinc-600'}`}>
                     {c}
                   </button>
                 )
@@ -271,7 +271,7 @@ export default function Home() {
 
         {jmeno && telefon && jeValidniTelefon(telefon) && (
           <button onClick={odeslat} disabled={nacitani}
-            className="w-full bg-white text-black py-4 rounded-2xl font-medium text-sm hover:bg-zinc-100 transition-all">
+            className="w-full bg-amber-400 text-black py-4 rounded-2xl font-medium text-sm hover:bg-amber-300 transition-all">
             {nacitani ? 'Odesílám...' : 'Potvrdit rezervaci'}
           </button>
         )}
@@ -281,7 +281,7 @@ export default function Home() {
 
       {sluzba && (
         <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-3 bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-transparent pointer-events-none">
-          <div className="max-w-md mx-auto bg-zinc-900 border border-zinc-700 rounded-2xl px-4 py-3 flex items-center gap-3 pointer-events-auto">
+          <div className="max-w-md mx-auto bg-zinc-900 border border-amber-400/30 rounded-2xl px-4 py-3 flex items-center gap-3 pointer-events-auto">
             <div className="flex-1 flex items-center gap-2 flex-wrap">
               <span className="text-white text-sm font-medium">{sluzba.nazev}</span>
               {datum && (
