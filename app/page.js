@@ -48,7 +48,7 @@ export default function Home() {
     setNacitani(true)
     setChyba('')
     const { error } = await supabase.from('rezervace').insert({
-      jmeno, telefon, sluzba: sluzba.nazev, datum, cas
+      jmeno, telefon, sluzba: sluzba.nazev, datum, cas, email: email || null
     })
     if (error) {
       if (error.code === '23505') {
