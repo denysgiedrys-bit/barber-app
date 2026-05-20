@@ -11,6 +11,7 @@ const SLUZBY = [
 const CASY = ['9:00','9:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']
 
 const nc = c => { const s = (c || '').slice(0, 5); return s.startsWith('0') ? s.slice(1) : s }
+const casNaMinuty = c => { const [h, m] = nc(c).split(':').map(Number); return h * 60 + m }
 
 export default function Home() {
   const [sluzba, setSluzba] = useState(null)
@@ -34,7 +35,7 @@ export default function Home() {
   }, [])
 
   async function nactiData() {
-    const { data: rez } = await supabase.from('rezervace').select('datum, cas')
+    const { data: rez } = await supabase.from('rezervace').select('datum, cas, sluzba')
     const { data: blok } = await supabase.from('blokovane_dny').select('datum')
     const { data: hod } = await supabase.from('blokovane_hodiny').select('datum, cas')
     const { data: dost } = await supabase.from('dostupnost').select('datum, cas')
@@ -91,7 +92,19 @@ export default function Home() {
   }
 
   function jeCasNedostupny(c) {
-    if (rezervace.some(r => r.datum === datum && nc(r.cas) === nc(c))) return true
+    const cMin = casNaMinuty(c)
+    if (rezervace.some(r => {
+      if (r.datum !== datum) return false
+      const rMin = casNaMinuty(r.cas)
+      const obj = SLUZBY.find(s => s.nazev === r.sluzba)
+      const trvani = obj ? obj.trvani : 30
+      return cMin >= rMin && cMin < rMin + trvani
+    })) return true
+    if (sluzba && rezervace.some(r => {
+      if (r.datum !== datum) return false
+      const rMin = casNaMinuty(r.cas)
+      return rMin > cMin && rMin < cMin + sluzba.trvani
+    })) return true
     if (blokovaneHodiny.some(h => h.datum === datum && nc(h.cas) === nc(c))) return true
     return false
   }
