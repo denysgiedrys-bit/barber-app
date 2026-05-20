@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import Logo from '../components/Logo'
 
 const CASY = ['9:00','9:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30']
 
@@ -108,8 +109,13 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-1 text-white">Admin panel</h1>
-        <p className="text-zinc-400 mb-6 text-sm">Správa rezervací a rozvrhu</p>
+        <div className="flex items-center gap-3 mb-6">
+          <Logo size={40} />
+          <div>
+            <h1 className="text-xl font-bold text-white leading-tight">MCuts</h1>
+            <p className="text-zinc-400 text-xs">Admin panel</p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[['Dnes', dnesniRez.length], ['Nadcházející', budouciRez.length], ['Celkem', rezervace.length]].map(([label, val]) => (
@@ -123,7 +129,7 @@ export default function Admin() {
         <div className="flex gap-2 mb-5 flex-wrap">
           {[['rezervace','Rezervace'],['statistiky','Statistiky'],['rozvrh','Rozvrh'],['dny','Blokovat dny']].map(([id, label]) => (
             <button key={id} onClick={() => setAktivniTab(id)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${aktivniTab === id ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}>
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${aktivniTab === id ? 'bg-amber-400 text-black' : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-600'}`}>
               {label}
             </button>
           ))}
@@ -301,7 +307,7 @@ export default function Admin() {
                   return (
                     <button key={den} onClick={() => setVybranyDenTydne(vybranyDenTydne === den ? null : den)}
                       className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex flex-col items-center min-w-10 ${
-                        vybranyDenTydne === den ? 'bg-white text-black' : pocet > 0 ? 'bg-green-950 text-green-300 border border-green-800' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                        vybranyDenTydne === den ? 'bg-amber-400 text-black' : pocet > 0 ? 'bg-green-950 text-green-300 border border-green-800' : 'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:border-zinc-600'
                       }`}>
                       <span>{label}</span>
                       {pocet > 0 && <span className="text-xs opacity-60">{pocet}h</span>}
@@ -370,7 +376,7 @@ export default function Admin() {
             <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 flex gap-2 mb-3">
               <input type="date" value={novyDatum} onChange={e => setNovyDatum(e.target.value)}
                 className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-white text-sm outline-none focus:border-zinc-500" />
-              <button onClick={blokovatDen} className="bg-white text-black px-4 py-2 rounded-xl text-sm font-medium">
+              <button onClick={blokovatDen} className="bg-amber-400 hover:bg-amber-300 text-black px-4 py-2 rounded-xl text-sm font-medium transition-all">
                 Zavřít
               </button>
             </div>
